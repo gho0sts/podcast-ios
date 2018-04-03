@@ -27,6 +27,8 @@ class DiscoverViewController: DiscoverComponentViewController {
     let topicsCollectionViewHeight: CGFloat = 110
     let seriesCollectionViewHeight: CGFloat = 160
 
+    override var pageSize: Int { get { return 10 } }
+
     var trendingTopics = [Topic]()
     var topSeries = [Series]()
     var topEpisodes = [Episode]()
@@ -104,9 +106,21 @@ class DiscoverViewController: DiscoverComponentViewController {
             make.height.equalTo(headerViewHeight)
         }
 
+        loadingAnimation = LoadingAnimatorUtilities.createLoadingAnimator()
+        view.addSubview(loadingAnimation)
+        loadingAnimation.snp.makeConstraints { make in
+            make.center.equalTo(topSeriesCollectionView.snp.center)
+        }
+        loadingAnimation.startAnimating()
+
         headerView.setNeedsLayout()
         headerView.layoutIfNeeded()
 
+        fetchDiscoverElements()
+    }
+
+    override func viewDidAppear(_ animated: Bool) {
+        super.viewDidAppear(animated)
         fetchDiscoverElements()
     }
 
@@ -148,6 +162,7 @@ class DiscoverViewController: DiscoverComponentViewController {
             self.offset += self.pageSize
             self.topEpisodesTableView.finishInfiniteScroll()
             self.topEpisodesTableView.reloadData()
+            self.loadingAnimation.stopAnimating()
         }
 
         getEpisodesEndpointRequest.failure = { _ in

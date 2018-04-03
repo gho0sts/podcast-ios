@@ -32,6 +32,7 @@ class ActionSheetHeader {
 
 protocol ActionSheetViewControllerDelegate: class {
     func didPressSegmentedControlForTrimSilence(selected: Bool)
+    func didPressSegmentedControlForSavePreferences(selected: Bool)
 }
 
 class ActionSheetViewController: UIViewController, UITableViewDataSource, UITableViewDelegate, ActionSheetPlayerControlsTableViewCellDelegate {
@@ -144,7 +145,6 @@ class ActionSheetViewController: UIViewController, UITableViewDataSource, UITabl
             self.darkBackgroundView.alpha = 0.8
             self.actionSheetContainerView.frame = CGRect(x: 0, y: self.view.frame.height - self.actionSheetContainerView.frame.height - self.safeArea.bottom, width: self.actionSheetContainerView.frame.width, height: self.actionSheetContainerView.frame.height + self.safeArea.bottom)
         }
-        
     }
     
     func hideActionSheet(animated: Bool, completion: (() -> ())?) {
@@ -152,7 +152,6 @@ class ActionSheetViewController: UIViewController, UITableViewDataSource, UITabl
         UIView.animate(withDuration: animated ? 0.25 : 0.0, animations: {
             self.darkBackgroundView.alpha = 0.0
             self.actionSheetContainerView.frame = CGRect(x: 0, y: self.view.frame.height, width: self.actionSheetContainerView.frame.width, height: self.actionSheetContainerView.frame.height)
-
         }, completion: { (completed: Bool) in
             completion?()
         })
@@ -206,8 +205,17 @@ class ActionSheetViewController: UIViewController, UITableViewDataSource, UITabl
     }
 
     // MARK - TableViewCell Delegate Methods
-    func didPressSegmentedControlForTrimSilence(selected: Bool) {
-        delegate?.didPressSegmentedControlForTrimSilence(selected: selected)
+    func didPressSegmentedControl(cell: ActionSheetPlayerControlsTableViewCell, isSelected: Bool) {
+        guard let indexPath = optionTableView.indexPath(for: cell) else { return }
+        let option = options[indexPath.row]
+        switch(option.type) {
+        case .playerSettingsTrimSilence:
+            delegate?.didPressSegmentedControlForTrimSilence(selected: isSelected)
+        case .playerSettingsCustomizePlayerSettings:
+            delegate?.didPressSegmentedControlForSavePreferences(selected: isSelected)
+        default:
+            break
+        }
     }
 
 }
