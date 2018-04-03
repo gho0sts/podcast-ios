@@ -55,6 +55,7 @@ class Episode: NSObject, NSCoding {
     var duration: String
     var topics: [Topic]
     var numberOfRecommendations: Int
+    
     var isBookmarked: Bool
     var isRecommended: Bool
     var currentProgress: Double // For listening histroy duration
