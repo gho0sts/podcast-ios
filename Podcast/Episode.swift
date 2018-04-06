@@ -56,25 +56,28 @@ class Episode: NSObject, NSCoding {
     var topics: [Topic]
     var numberOfRecommendations: Int
     
-    var isBookmarked: Bool
-    var isRecommended: Bool
-    var currentProgress: Double // For listening histroy duration
-    var isDurationWritten: Bool // flag indicating if we have sent backend the actual episodes duration, only used when sending listening duration requests
+    //all attribute initializer
+    init(id: String, title: String, dateCreated: Date, descriptionText: String, smallArtworkImageURL: URL?, seriesID: String, largeArtworkImageURL: URL?, audioURL: URL?, duration: String, seriesTitle: String, topics: [Topic], numberOfRecommendations: Int) {
+        self.id = id
+        self.title = title
+        self.dateCreated = dateCreated
+        self.smallArtworkImageURL = smallArtworkImageURL
+        self.largeArtworkImageURL = largeArtworkImageURL
+        self.audioURL = audioURL
+        self.seriesID = seriesID
+        self.numberOfRecommendations = numberOfRecommendations
+        self.seriesTitle = seriesTitle
+        self.duration = duration
+        self.topics = topics
+        super.init()
 
-    var isDownloaded: Bool = false
-    var resumeData: Data?
-    var percentDownloaded: Double?
-    var fileURL: URL? {
-        if let url = audioURL {
-            let documentsURL = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask)[0]
-            let pathURL = documentsURL.appendingPathComponent("downloaded").appendingPathComponent(seriesTitle)
-            return pathURL.appendingPathComponent(id + "_" + url.lastPathComponent)
-        } else {
-            return nil
+        self.dateTimeLabelString = getDateTimeLabelString()
+
+        // Makes sure didSet gets called during init
+        defer {
+            self.descriptionText = descriptionText
         }
     }
-    
-    
     
     struct Keys {
         static let id = "episode_id"
@@ -91,15 +94,9 @@ class Episode: NSObject, NSCoding {
         static let duration = "episode_duration"
         static let topics = "episode_topics"
         static let numberOfRecommendations = "episode_numRec"
-        static let isBookmarked = "episode_bookmarked"
-        static let isRecommended = "episode_recommended"
-        static let isDurationWritten = "episode_durationWritten"
-        static let isDownloaded = "episode_downloaded"
-        static let resumeData = "episode_resumeData"
     }
     
-    required convenience init(coder decoder: NSCoder) {
-        self.init()
+    required init(coder decoder: NSCoder) {
         if let obj = decoder.decodeObject(forKey: Keys.id) as? String {
             self.id = obj
         }
@@ -118,7 +115,6 @@ class Episode: NSObject, NSCoding {
         if let obj = decoder.decodeObject(forKey: Keys.attrDescription) as? NSAttributedString {
             self.attributedDescription = obj
         }
-        self.currentProgress = decoder.decodeDouble(forKey: Keys.progress)
         if let obj = decoder.decodeObject(forKey: Keys.dateTimeLabelString) as? String {
             self.dateTimeLabelString = obj
         }
@@ -140,13 +136,7 @@ class Episode: NSObject, NSCoding {
         if let obj = decoder.decodeObject(forKey: Keys.numberOfRecommendations) as? Int {
             self.numberOfRecommendations = obj
         }
-        self.isBookmarked = decoder.decodeBool(forKey: Keys.isBookmarked)
-        self.isRecommended = decoder.decodeBool(forKey: Keys.isRecommended)
-        self.isDurationWritten = decoder.decodeBool(forKey: Keys.isDurationWritten)
-        self.isDownloaded = decoder.decodeBool(forKey: Keys.isDownloaded)
-        if let obj = decoder.decodeObject(forKey: Keys.resumeData) as? Data {
-            self.resumeData = obj
-        }
+        super.init()
     }
     
     func encode(with aCoder: NSCoder) {
@@ -156,7 +146,6 @@ class Episode: NSObject, NSCoding {
         aCoder.encode(seriesTitle, forKey: Keys.seriesTitle)
         aCoder.encode(dateCreated, forKey: Keys.dateCreated)
         aCoder.encode(attributedDescription, forKey: Keys.attrDescription)
-        aCoder.encode(currentProgress, forKey: Keys.progress)
         aCoder.encode(dateTimeLabelString, forKey: Keys.dateTimeLabelString)
         aCoder.encode(smallArtworkImageURL, forKey: Keys.smallArtworkImageURL)
         aCoder.encode(largeArtworkImageURL, forKey: Keys.largeArtworkImageURL)
@@ -164,44 +153,6 @@ class Episode: NSObject, NSCoding {
         aCoder.encode(duration, forKey: Keys.duration)
         aCoder.encode(topics, forKey: Keys.topics)
         aCoder.encode(numberOfRecommendations, forKey: Keys.numberOfRecommendations)
-        aCoder.encode(isBookmarked, forKey: Keys.isBookmarked)
-        aCoder.encode(isRecommended, forKey: Keys.isRecommended)
-        aCoder.encode(isDurationWritten, forKey: Keys.isDurationWritten)
-        aCoder.encode(isDownloaded, forKey: Keys.isDownloaded)
-        aCoder.encode(resumeData, forKey: Keys.resumeData)
-    }
-    
-    //dummy data initializer - will remove in future when we have real data  
-    override convenience init() {
-        self.init(id: "", title: "", dateCreated: Date(), descriptionText: "", smallArtworkImageURL:nil, seriesID: "", largeArtworkImageURL: nil, audioURL: nil, duration: "1:45", seriesTitle: "", topics: [], numberOfRecommendations: 0, isRecommended: false, isBookmarked: false, currentProgress: 0.0, isDurationWritten: false)
-    }
-    
-    //all attribute initializer
-    init(id: String, title: String, dateCreated: Date, descriptionText: String, smallArtworkImageURL: URL?, seriesID: String, largeArtworkImageURL: URL?, audioURL: URL?, duration: String, seriesTitle: String, topics: [Topic], numberOfRecommendations: Int, isRecommended: Bool, isBookmarked: Bool, currentProgress: Double, isDurationWritten: Bool) {
-        self.id = id
-        self.title = title
-        self.dateCreated = dateCreated
-        self.smallArtworkImageURL = smallArtworkImageURL
-        self.largeArtworkImageURL = largeArtworkImageURL
-        self.audioURL = audioURL
-        self.seriesID = seriesID
-        self.isRecommended = isRecommended
-        self.isBookmarked = isBookmarked
-        self.numberOfRecommendations = numberOfRecommendations
-        self.seriesTitle = seriesTitle
-        self.duration = duration
-        self.topics = topics
-        self.currentProgress = currentProgress
-        self.isDurationWritten = isDurationWritten
-        super.init()
-
-        self.dateTimeLabelString = getDateTimeLabelString()
-
-        // Makes sure didSet gets called during init
-        defer {
-            self.descriptionText = descriptionText
-
-        }
     }
 
     convenience init(json: JSON) {
@@ -209,8 +160,6 @@ class Episode: NSObject, NSCoding {
         let title = json["title"].stringValue
         let dateString = json["pub_date"].stringValue
         let descriptionText = json["summary"].stringValue
-        let isRecommended = json["is_recommended"].boolValue
-        let isBookmarked = json["is_bookmarked"].boolValue
         let numberOfRecommendations = json["recommendations_count"].intValue
         let seriesTitle = json["series"]["title"].stringValue
         let seriesID = json["series"]["id"].stringValue
@@ -221,16 +170,12 @@ class Episode: NSObject, NSCoding {
         let dateCreated = DateFormatter.restAPIDateFormatter.date(from: dateString) ?? Date()
         let smallArtworkURL = URL(string: json["series"]["image_url_sm"].stringValue)
         let largeArtworkURL = URL(string: json["series"]["image_url_lg"].stringValue)
-        let currentProgress = json["current_progress"].doubleValue
-        let isDurationWritten = json["real_duration_written"].boolValue 
-        self.init(id: id, title: title, dateCreated: dateCreated, descriptionText: descriptionText, smallArtworkImageURL: smallArtworkURL, seriesID: seriesID, largeArtworkImageURL: largeArtworkURL, audioURL: audioURL, duration: duration, seriesTitle: seriesTitle, topics: topics, numberOfRecommendations: numberOfRecommendations, isRecommended: isRecommended, isBookmarked: isBookmarked, currentProgress: currentProgress, isDurationWritten: isDurationWritten)
+        self.init(id: id, title: title, dateCreated: dateCreated, descriptionText: descriptionText, smallArtworkImageURL: smallArtworkURL, seriesID: seriesID, largeArtworkImageURL: largeArtworkURL, audioURL: audioURL, duration: duration, seriesTitle: seriesTitle, topics: topics, numberOfRecommendations: numberOfRecommendations)
     }
     
     func update(json: JSON) {
         title = json["title"].stringValue
         descriptionText = json["summary"].stringValue
-        isRecommended = json["is_recommended"].boolValue
-        isBookmarked = json["is_bookmarked"].boolValue
         numberOfRecommendations = json["recommendations_count"].intValue
         seriesTitle = json["series"]["title"].stringValue
         seriesID = json["series"]["id"].stringValue
@@ -240,8 +185,6 @@ class Episode: NSObject, NSCoding {
         dateCreated = DateFormatter.restAPIDateFormatter.date(from: json["pub_date"].stringValue) ?? Date()
         smallArtworkImageURL = URL(string: json["series"]["image_url_sm"].stringValue)
         largeArtworkImageURL = URL(string: json["series"]["image_url_lg"].stringValue)
-        currentProgress = json["current_progress"].doubleValue
-        isDurationWritten = json["real_duration_written"].boolValue
         dateTimeLabelString = getDateTimeLabelString()
     }
 
@@ -265,87 +208,87 @@ class Episode: NSObject, NSCoding {
         return dateFormatter.string(from: dateCreated)
     }
     
-    func bookmarkChange(completion: ((Bool) -> ())? = nil) {
-        isBookmarked ? deleteBookmark(success: completion, failure: completion) : createBookmark(success: completion, failure: completion)
-    }
-    
-    func recommendedChange(completion: ((Bool, Int) -> ())? = nil) {
-        isRecommended ? deleteRecommendation(success: completion, failure: completion) : createRecommendation(success: completion, failure: completion)
-    }
-    
-    func createBookmark(success: ((Bool) -> ())? = nil, failure: ((Bool) -> ())? = nil) {
-        let endpointRequest = CreateBookmarkEndpointRequest(episodeID: id)
-        endpointRequest.success = { _ in
-            self.isBookmarked = true
-            success?(self.isBookmarked)
-        }
-        endpointRequest.failure = { _ in
-            self.isBookmarked = false
-            failure?(self.isBookmarked)
-        }
-        System.endpointRequestQueue.addOperation(endpointRequest)
-    }
-    
-    func deleteBookmark(success: ((Bool) -> ())? = nil, failure: ((Bool) -> ())? = nil) {
-        let endpointRequest = DeleteBookmarkEndpointRequest(episodeID: id)
-        endpointRequest.success = { _ in
-            self.isBookmarked = false
-            success?(self.isBookmarked)
-        }
-        endpointRequest.failure = { _ in
-            self.isBookmarked = true
-            failure?(self.isBookmarked)
-        }
-        System.endpointRequestQueue.addOperation(endpointRequest)
-    }
-    
-    func deleteListeningHistory(success: (() -> ())? = nil, failure: (() -> ())? = nil) {
-        let endpointRequest = DeleteListeningHistoryElementEndpointRequest(episodeID: id)
-        endpointRequest.success = { _ in
-            success?()
-        }
-        endpointRequest.failure = { _ in
-            failure?()
-        }
-        System.endpointRequestQueue.addOperation(endpointRequest)
-    }
-    
-    func createRecommendation(success: ((Bool, Int) -> ())? = nil, failure: ((Bool, Int) -> ())? = nil) {
-        if let user = System.currentUser, let hasRecasted = user.hasRecasted, !hasRecasted { // first recast
-            guard let appDelegate = UIApplication.shared.delegate as? AppDelegate, let tabBarController = appDelegate.tabBarController else { return }
-            let recastDescription = ActionSheetOption(type: .recastDescription, action: nil)
-            let actionSheetViewController = ActionSheetViewController(options: [recastDescription], header: nil)
-            actionSheetViewController.cancelButtonTitle = "Got it!"
-            tabBarController.currentlyPresentedViewController?.showActionSheetViewController(actionSheetViewController: actionSheetViewController)
-        }
-
-        let endpointRequest = CreateRecommendationEndpointRequest(episodeID: id)
-        endpointRequest.success = { _ in
-            System.currentUser!.hasRecasted = true
-            self.isRecommended = true
-            self.numberOfRecommendations += 1
-            success?(self.isRecommended, self.numberOfRecommendations)
-        }
-        endpointRequest.failure = { _ in
-            self.isRecommended = false
-            failure?(self.isRecommended, self.numberOfRecommendations)
-        }
-        System.endpointRequestQueue.addOperation(endpointRequest)
-    }
-    
-    func deleteRecommendation(success: ((Bool, Int) -> ())? = nil, failure: ((Bool, Int) -> ())? = nil) {
-        let endpointRequest = DeleteRecommendationEndpointRequest(episodeID: id)
-        endpointRequest.success = { _ in
-            self.isRecommended = false
-            self.numberOfRecommendations -= 1
-            success?(self.isRecommended, self.numberOfRecommendations)
-        }
-        endpointRequest.failure = { _ in
-            self.isRecommended = true
-            failure?(self.isRecommended, self.numberOfRecommendations)
-        }
-        System.endpointRequestQueue.addOperation(endpointRequest)
-    }
+//    func bookmarkChange(completion: ((Bool) -> ())? = nil) {
+//        isBookmarked ? deleteBookmark(success: completion, failure: completion) : createBookmark(success: completion, failure: completion)
+//    }
+//
+//    func recommendedChange(completion: ((Bool, Int) -> ())? = nil) {
+//        isRecommended ? deleteRecommendation(success: completion, failure: completion) : createRecommendation(success: completion, failure: completion)
+//    }
+//
+//    func createBookmark(success: ((Bool) -> ())? = nil, failure: ((Bool) -> ())? = nil) {
+//        let endpointRequest = CreateBookmarkEndpointRequest(episodeID: id)
+//        endpointRequest.success = { _ in
+//            self.isBookmarked = true
+//            success?(self.isBookmarked)
+//        }
+//        endpointRequest.failure = { _ in
+//            self.isBookmarked = false
+//            failure?(self.isBookmarked)
+//        }
+//        System.endpointRequestQueue.addOperation(endpointRequest)
+//    }
+//
+//    func deleteBookmark(success: ((Bool) -> ())? = nil, failure: ((Bool) -> ())? = nil) {
+//        let endpointRequest = DeleteBookmarkEndpointRequest(episodeID: id)
+//        endpointRequest.success = { _ in
+//            self.isBookmarked = false
+//            success?(self.isBookmarked)
+//        }
+//        endpointRequest.failure = { _ in
+//            self.isBookmarked = true
+//            failure?(self.isBookmarked)
+//        }
+//        System.endpointRequestQueue.addOperation(endpointRequest)
+//    }
+//
+//    func deleteListeningHistory(success: (() -> ())? = nil, failure: (() -> ())? = nil) {
+//        let endpointRequest = DeleteListeningHistoryElementEndpointRequest(episodeID: id)
+//        endpointRequest.success = { _ in
+//            success?()
+//        }
+//        endpointRequest.failure = { _ in
+//            failure?()
+//        }
+//        System.endpointRequestQueue.addOperation(endpointRequest)
+//    }
+//
+//    func createRecommendation(success: ((Bool, Int) -> ())? = nil, failure: ((Bool, Int) -> ())? = nil) {
+//        if let user = System.currentUser, let hasRecasted = user.hasRecasted, !hasRecasted { // first recast
+//            guard let appDelegate = UIApplication.shared.delegate as? AppDelegate, let tabBarController = appDelegate.tabBarController else { return }
+//            let recastDescription = ActionSheetOption(type: .recastDescription, action: nil)
+//            let actionSheetViewController = ActionSheetViewController(options: [recastDescription], header: nil)
+//            actionSheetViewController.cancelButtonTitle = "Got it!"
+//            tabBarController.currentlyPresentedViewController?.showActionSheetViewController(actionSheetViewController: actionSheetViewController)
+//        }
+//
+//        let endpointRequest = CreateRecommendationEndpointRequest(episodeID: id)
+//        endpointRequest.success = { _ in
+//            System.currentUser!.hasRecasted = true
+//            self.isRecommended = true
+//            self.numberOfRecommendations += 1
+//            success?(self.isRecommended, self.numberOfRecommendations)
+//        }
+//        endpointRequest.failure = { _ in
+//            self.isRecommended = false
+//            failure?(self.isRecommended, self.numberOfRecommendations)
+//        }
+//        System.endpointRequestQueue.addOperation(endpointRequest)
+//    }
+//
+//    func deleteRecommendation(success: ((Bool, Int) -> ())? = nil, failure: ((Bool, Int) -> ())? = nil) {
+//        let endpointRequest = DeleteRecommendationEndpointRequest(episodeID: id)
+//        endpointRequest.success = { _ in
+//            self.isRecommended = false
+//            self.numberOfRecommendations -= 1
+//            success?(self.isRecommended, self.numberOfRecommendations)
+//        }
+//        endpointRequest.failure = { _ in
+//            self.isRecommended = true
+//            failure?(self.isRecommended, self.numberOfRecommendations)
+//        }
+//        System.endpointRequestQueue.addOperation(endpointRequest)
+//    }
 
     func share(with user: User, success: (() -> ())? = nil, failure: (() -> ())? = nil) {
         let endpointRequest = CreateShareEndpointRequest(episodeId: id, userSharedWithIds: [user.id])

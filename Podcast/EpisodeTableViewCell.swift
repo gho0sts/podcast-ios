@@ -10,6 +10,7 @@ import UIKit
 import SnapKit
 
 protocol EpisodeTableViewCellDelegate: class {
+    func episodeTableView(didPress action: EpisodeAction, on cell: EpisodeTableViewCell)
     
     func episodeTableViewCellDidPressPlayPauseButton(episodeTableViewCell: EpisodeTableViewCell)
     func episodeTableViewCellDidPressRecommendButton(episodeTableViewCell: EpisodeTableViewCell)

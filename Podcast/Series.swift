@@ -15,7 +15,7 @@ class Series: NSObject {
     var title: String
     var largeArtworkImageURL: URL?
     var smallArtworkImageURL: URL?
-    var isSubscribed: Bool
+//    var isSubscribed: Bool
     var lastUpdated: Date? {
         didSet {
             if let updated = lastUpdated {

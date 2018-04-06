@@ -16,6 +16,7 @@ class System {
     static let profileTab: Int = 4
     
     static var currentUser: User?
+    static var currentUserData: UserData?
 
     static var currentSession: Session?
     

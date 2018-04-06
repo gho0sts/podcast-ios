@@ -296,11 +296,29 @@ extension DiscoverViewController: EpisodeTableViewCellDelegate {
         // update index path
         currentlyPlayingIndexPath = episodeIndexPath
     }
+    
+    func episodeTableView(didPress action: EpisodeAction, on cell: EpisodeTableViewCell) {
+        guard let episodeIndexPath = topEpisodesTableView.indexPath(for: cell) else { return }
+        let episode = topEpisodes[episodeIndexPath.row]
+        switch action {
+        case .bookmark, .recast, .writeDuration:
+            EpisodeActionManager.perform(action, for: episode)
+        case .listenProgress:
+            break
+        case .download:
+            // Download
+            break
+        case .share:
+            let viewController = ShareEpisodeViewController(user: System.currentUser!, episode: episode)
+            self.navigationController?.pushViewController(viewController, animated: true)
+        }
+    }
 
     func episodeTableViewCellDidPressRecommendButton(episodeTableViewCell: EpisodeTableViewCell) {
         guard let episodeIndexPath = topEpisodesTableView.indexPath(for: episodeTableViewCell) else { return }
         let episode = topEpisodes[episodeIndexPath.row]
-        episode.recommendedChange(completion: episodeTableViewCell.setRecommendedButtonToState)
+        System.currentUserData?.perform(action: .recast, for: episode.id)
+//        episode.recommendedChange(completion: episodeTableViewCell.setRecommendedButtonToState)
     }
 
     func episodeTableViewCellDidPressBookmarkButton(episodeTableViewCell: EpisodeTableViewCell) {
@@ -313,10 +331,10 @@ extension DiscoverViewController: EpisodeTableViewCellDelegate {
         guard let episodeIndexPath = topEpisodesTableView.indexPath(for: episodeTableViewCell) else { return }
         let episode = topEpisodes[episodeIndexPath.row]
 
-        let option1 = ActionSheetOption(type: .download(selected: episode.isDownloaded), action: {
-            DownloadManager.shared.downloadOrRemove(episode: episode, callback: self.didReceiveDownloadUpdateFor)
+        let download = ActionSheetOption(type: DownloadManager.shared.actionSheetType(for: episode.id), action: {
+            DownloadManager.shared.handle(episode)
         })
-        let shareEpisodeOption = ActionSheetOption(type: .shareEpisode, action: {
+        let shareEpisode = ActionSheetOption(type: .shareEpisode, action: {
             guard let user = System.currentUser else { return }
             let viewController = ShareEpisodeViewController(user: user, episode: episode)
             self.navigationController?.pushViewController(viewController, animated: true)
@@ -328,7 +346,7 @@ extension DiscoverViewController: EpisodeTableViewCellDelegate {
             header = ActionSheetHeader(image: image, title: title, description: description)
         }
 
-        let actionSheetViewController = ActionSheetViewController(options: [option1, shareEpisodeOption], header: header)
+        let actionSheetViewController = ActionSheetViewController(options: [download, shareEpisode], header: header)
         showActionSheetViewController(actionSheetViewController: actionSheetViewController)
     }
 
@@ -336,6 +354,19 @@ extension DiscoverViewController: EpisodeTableViewCellDelegate {
         var paths: [IndexPath] = []
         for i in 0..<topEpisodes.count {
             if topEpisodes[i].id == episode.id {
+                paths.append(IndexPath(row: i, section: 0))
+            }
+        }
+        topEpisodesTableView.reloadRows(at: paths, with: .none)
+    }
+}
+
+// Mark: - EpisodeDownloader
+extension DiscoverViewController: EpisodeDownloader {
+    func didReceive(status: DownloadStatus, for episode: String) {
+        var paths: [IndexPath] = []
+        for i in 0..<topEpisodes.count {
+            if topEpisodes[i].id == episode {
                 paths.append(IndexPath(row: i, section: 0))
             }
         }

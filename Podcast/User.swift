@@ -14,13 +14,15 @@ class User: NSObject {
     var id: String
     var firstName: String
     var lastName: String
-    var isFollowing: Bool
+//    var isFollowing: Bool
     var numberOfFollowers: Int
     var username: String
     var imageURL: URL?
     var numberOfFollowing: Int
     var isFacebookUser: Bool
     var isGoogleUser: Bool
+    
+    // TODO: Move this
     var hasRecasted: Bool? { // only for current user
         get {
             if self == System.currentUser {
