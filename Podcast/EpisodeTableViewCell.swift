@@ -11,11 +11,12 @@ import SnapKit
 
 protocol EpisodeTableViewCellDelegate: class {
     func episodeTableView(didPress action: EpisodeAction, on cell: EpisodeTableViewCell)
+    func episodeTableView(didPressMoreActionsOn cell: EpisodeTableViewCell)
     
-    func episodeTableViewCellDidPressPlayPauseButton(episodeTableViewCell: EpisodeTableViewCell)
-    func episodeTableViewCellDidPressRecommendButton(episodeTableViewCell: EpisodeTableViewCell)
-    func episodeTableViewCellDidPressBookmarkButton(episodeTableViewCell: EpisodeTableViewCell)
-    func episodeTableViewCellDidPressMoreActionsButton(episodeTableViewCell: EpisodeTableViewCell)
+//    func episodeTableViewCellDidPressPlayPauseButton(episodeTableViewCell: EpisodeTableViewCell)
+//    func episodeTableViewCellDidPressRecommendButton(episodeTableViewCell: EpisodeTableViewCell)
+//    func episodeTableViewCellDidPressBookmarkButton(episodeTableViewCell: EpisodeTableViewCell)
+//    func episodeTableViewCellDidPressMoreActionsButton(episodeTableViewCell: EpisodeTableViewCell)
 }
 
 class EpisodeTableViewCell: UITableViewCell, EpisodeSubjectViewDelegate {
@@ -35,6 +36,7 @@ class EpisodeTableViewCell: UITableViewCell, EpisodeSubjectViewDelegate {
             make.edges.equalToSuperview()
         }
         
+        // This is gross. But it's too broken
         episodeSubjectView.delegate = self 
     }
     
@@ -42,13 +44,17 @@ class EpisodeTableViewCell: UITableViewCell, EpisodeSubjectViewDelegate {
         fatalError("init(coder:) has not been implemented")
     }
     
-    func setup(with episode: Episode) {
-        episodeSubjectView.setup(with: episode)
+    func setup(with episode: Episode, and info: EpisodeUserInfo) {
+        episodeSubjectView.setup(with: episode, and: info)
+    }
+    
+    func update(with userInfo: EpisodeUserInfo) {
+        
     }
 
-    func updateWithPlayButtonPress(episode: Episode) {
-        episodeSubjectView.updateWithPlayButtonPress(episode: episode)
-    }
+//    func updateWithPlayButtonPress(episode: Episode) {
+//        episodeSubjectView.updateWithPlayButtonPress(episode: episode)
+//    }
     
     ///
     /// Mark: Delegate
@@ -62,19 +68,19 @@ class EpisodeTableViewCell: UITableViewCell, EpisodeSubjectViewDelegate {
     }
     
     func episodeSubjectViewDidPressPlayPauseButton(episodeSubjectView: EpisodeSubjectView) {
-        delegate?.episodeTableViewCellDidPressPlayPauseButton(episodeTableViewCell: self)
+        delegate?.episodeTableView(didPress: .play, on: self)
     }
     
     func episodeSubjectViewDidPressRecommendButton(episodeSubjectView: EpisodeSubjectView) {
-        delegate?.episodeTableViewCellDidPressRecommendButton(episodeTableViewCell: self)
+        delegate?.episodeTableView(didPress: .recast, on: self)
     }
     
     func episodeSubjectViewDidPressBookmarkButton(episodeSubjectView: EpisodeSubjectView) {
-        delegate?.episodeTableViewCellDidPressBookmarkButton(episodeTableViewCell: self)
+        delegate?.episodeTableView(didPress: .bookmark, on: self)
     }
     
     func episodeSubjectViewDidPressMoreActionsButton(episodeSubjectView: EpisodeSubjectView) {
-        delegate?.episodeTableViewCellDidPressMoreActionsButton(episodeTableViewCell: self)
+        delegate?.episodeTableView(didPressMoreActionsOn: self)
     }
 }
 

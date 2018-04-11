@@ -46,6 +46,10 @@ class DownloadedIconView: UIView {
         }
     }
     
+    func setup(for status: DownloadStatus) {
+        
+    }
+    
     func setupWith(episode: Episode) {
         if episode.isDownloaded {
             downloadedIcon.isHidden = false

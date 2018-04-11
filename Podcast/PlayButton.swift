@@ -26,10 +26,23 @@ class PlayButton: Button {
         titleEdgeInsets = UIEdgeInsets(top: 0, left: buttonTitlePadding, bottom: 0, right: 0)
     }
 
-    func configure(for episode: Episode) {
-        if let _ = episode.audioURL {
+//    func configure(for episode: Episode) {
+//        if let _ = episode.audioURL {
+//            isEnabled = true
+//            isSelected = episode.isPlaying
+//            titleEdgeInsets = UIEdgeInsets(top: 0, left: buttonTitlePadding, bottom: 0, right: 0)
+//        } else {
+//            titleEdgeInsets = .zero
+//            isEnabled = false
+//            isUserInteractionEnabled = false
+//            titleLabel?.numberOfLines = 2
+//        }
+//    }
+    
+    func configure(with isPlaying: Bool, and enabled: Bool) {
+        if enabled {
             isEnabled = true
-            isSelected = episode.isPlaying
+            isSelected = isPlaying
             titleEdgeInsets = UIEdgeInsets(top: 0, left: buttonTitlePadding, bottom: 0, right: 0)
         } else {
             titleEdgeInsets = .zero

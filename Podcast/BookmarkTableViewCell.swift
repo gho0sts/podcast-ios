@@ -63,7 +63,6 @@ class BookmarkTableViewCell: UITableViewCell {
     var greyedOutLabel: UILabel!
     
     weak var delegate: BookmarkTableViewCellDelegate?
-    var episodeID: String!
     
     
     ///
@@ -157,14 +156,13 @@ class BookmarkTableViewCell: UITableViewCell {
         separator.frame = CGRect(x: 0, y: frame.height - separatorHeight, width: frame.width, height: separatorHeight)
     }
     
-    func setupWithEpisode(episode: Episode) {
-        episodeID = episode.id
+    func configure(for episode: Episode, and info: EpisodeUserInfo) {
         episodeNameLabel.text = episode.title
         dateTimeLabel.text = episode.dateTimeLabelString
-        recommendedButton.setupWithNumber(isSelected: episode.isRecommended, numberOf: episode.numberOfRecommendations)
+        recommendedButton.configure(isSelected: info.isRecasted, numberOf: episode.numberOfRecommendations)
         episodeImage.setImageAsynchronouslyWithDefaultImage(url: episode.smallArtworkImageURL)
-        slider.setSliderProgress(isPlaying: episode.isPlaying, progress: episode.currentProgress)
-        playButton.configure(for: episode)
+        slider.setSliderProgress(isPlaying: info.isPlaying, progress: info.listenProgress ?? 0)
+        playButton.configure(with: info.isPlaying, and: episode.audioURL != nil)
         recommendedButton.isHidden = episode.audioURL == nil
         greyedOutLabel.isHidden = episode.audioURL != nil
     }

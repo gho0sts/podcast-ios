@@ -159,9 +159,9 @@ class EpisodeSubjectView: UIView {
         episodeUtilityButtonBarView.playButton.addTarget(self, action: #selector(didPressPlayButton), for: .touchUpInside)
     }
     
-    convenience init(episode: Episode) {
+    convenience init(episode: Episode, info: EpisodeUserInfo) {
         self.init()
-        setup(with: episode)
+        setup(with: episode, and: info)
     }
     
     
@@ -174,7 +174,7 @@ class EpisodeSubjectView: UIView {
         episodeUtilityButtonBarView.prepareForReuse()
     }
     
-    func setup(with episode: Episode) {
+    func setup(with episode: Episode, and info: EpisodeUserInfo) {
         episodeNameLabel.text = episode.title
         dateTimeLabel.text = episode.dateTimeLabelString
         // this is to avoid newlines/paragraphs showing up after truncating text
@@ -182,14 +182,18 @@ class EpisodeSubjectView: UIView {
         let mutableString = NSMutableAttributedString(string: stringWithoutNewlines)
         descriptionLabel.attributedText = mutableString.toEpisodeDescriptionStyle(lineBreakMode: .byTruncatingTail)
         podcastImage.setImageAsynchronouslyWithDefaultImage(url: episode.smallArtworkImageURL)
-        episodeUtilityButtonBarView.setup(with: episode)
+        episodeUtilityButtonBarView.setup(with: episode, and: info)
         greyedOutLabel.isHidden = episode.audioURL != nil
         backgroundColor = episode.audioURL == nil ? UIColor.lightGrey.withAlphaComponent(0.5) : .offWhite
     }
-
-    func updateWithPlayButtonPress(episode: Episode) {
-        episodeUtilityButtonBarView.setup(with: episode)
+    
+    func set(_ isPlaying: Bool, _ enabled: Bool) {
+        episodeUtilityButtonBarView.set(isPlaying, enabled)
     }
+
+//    func updateWithPlayButtonPress(episode: Episode) {
+//        episodeUtilityButtonBarView.setup(with: episode)
+//    }
     
     ///
     ///Mark - Buttons

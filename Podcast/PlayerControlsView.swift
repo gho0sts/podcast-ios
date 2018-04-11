@@ -248,6 +248,6 @@ class PlayerControlsView: UIView {
     }
         
     func setRecommendButtonToState(isRecommended: Bool, numberOfRecommendations: Int) {
-        recommendButton.setupWithNumber(isSelected: isRecommended, numberOf: numberOfRecommendations)
+        recommendButton.configure(isSelected: isRecommended, numberOf: numberOfRecommendations)
     }
 }

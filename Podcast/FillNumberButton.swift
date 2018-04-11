@@ -28,7 +28,7 @@ class FillNumberButton: Button {
         case .subscribe:
             fillColor = .sea
             unfillColor = .clear
-            setupWithNumber(isSelected: false, numberOf: 0)
+            configure(isSelected: false, numberOfSubscribers: 0)
             setTitleColor(.sea, for: .normal)
             setTitleColor(.offWhite, for: .selected)
             setTitleColor(.sea, for: .highlighted)
@@ -39,7 +39,7 @@ class FillNumberButton: Button {
             layer.borderColor = UIColor.sea.cgColor
             
         case .recommend:
-            setupWithNumber(isSelected: false, numberOf: 0)
+            configure(isSelected: false, numberOfSubscribers: 0)
             setImage(#imageLiteral(resourceName: "repost"), for: .normal)
             setImage(#imageLiteral(resourceName: "repost_selected"), for: .selected)
             contentHorizontalAlignment = .left
@@ -54,7 +54,7 @@ class FillNumberButton: Button {
         fatalError("init(coder:) has not been implemented")
     }
     
-    func setupWithNumber(isSelected: Bool, numberOf: Int) {
+    func configure(isSelected: Bool, numberOf: Int) {
         self.isSelected = isSelected
         var titleString: String
         switch(type) {

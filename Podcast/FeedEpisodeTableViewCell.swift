@@ -37,13 +37,13 @@ class FeedEpisodeTableViewCell: UITableViewCell, FeedElementTableViewCell {
         switch context {
         case let .followingRecommendation(user, episode):
             userSeriesSupplierView.setupWithUsers(users: [user], feedContext: context)
-            episodeSubjectView.setup(with: episode)
+            episodeSubjectView.setup(with: episode, and: EpisodeManager.consolidateInfo(for: episode))
         case let .newlyReleasedEpisode(series, episode):
             userSeriesSupplierView.setupWithSeries(series: series)
-            episodeSubjectView.setup(with: episode)
+            episodeSubjectView.setup(with: episode, and: EpisodeManager.consolidateInfo(for: episode))
         case let .followingShare(user, episode):
             userSeriesSupplierView.setupWithUsers(users: [user], feedContext: context)
-            episodeSubjectView.setup(with: episode)
+            episodeSubjectView.setup(with: episode, and: EpisodeManager.consolidateInfo(for: episode))
         case .followingSubscription: break
         }
     }

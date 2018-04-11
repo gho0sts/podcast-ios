@@ -49,6 +49,17 @@ class DownloadManager: NSObject {
         }
     }
     
+    // Cannot return download progress
+    func status(for episode: String) -> DownloadStatus {
+        if isDownloading(episode) {
+            return .waiting
+        } else if isDownloaded(episode) {
+            return .finished
+        } else {
+            return .removed
+        }
+    }
+    
     func isDownloaded(_ episode: String) -> Bool {
         return downloaded.contains(where: { (k, v) in k == episode})
     }

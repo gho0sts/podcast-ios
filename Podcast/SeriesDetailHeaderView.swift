@@ -151,11 +151,11 @@ class SeriesDetailHeaderView: UIView, UICollectionViewDelegate, UICollectionView
         addSubview(episodeSeparator)
     }
     
-    func setSeries(series: Series) {
+    func configure(for series: Series, isSubscribed: Bool) {
         titleLabel.text = series.title
         publisherLabel.text = series.author
         topicsCollectionView.reloadData()
-        subscribeButtonChangeState(isSelected: series.isSubscribed, numberOfSubscribers: series.numberOfSubscribers)
+        subscribeButton.configure(isSelected: isSubscribed, numberOf: series.numberOfSubscribers)
         imageView.setImageAsynchronouslyWithDefaultImage(url: series.largeArtworkImageURL, defaultImage: #imageLiteral(resourceName: "nullSeries"))
         backgroundImageView.setImageAsynchronouslyWithDefaultImage(url: series.largeArtworkImageURL)
         publisherLabel.holdScrolling = false
@@ -266,10 +266,6 @@ class SeriesDetailHeaderView: UIView, UICollectionViewDelegate, UICollectionView
     
     @objc func didPressSubscribeButton() {
         delegate?.seriesDetailHeaderViewDidPressSubscribeButton(seriesDetailHeader: self)
-    }
-    
-    func subscribeButtonChangeState(isSelected: Bool, numberOfSubscribers: Int) {
-        subscribeButton.setupWithNumber(isSelected: isSelected, numberOf: numberOfSubscribers)
     }
     
     @objc func settingsWasPressed() {

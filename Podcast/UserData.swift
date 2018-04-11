@@ -74,6 +74,15 @@ class UserData: NSObject {
         }
     }
     
+    func info(for episode: Episode) -> EpisodeUserInfo {
+        let id = episode.id
+        let b = bookmarks.contains(id)
+        let r = recasts.contains(id)
+        let p = progress[id]
+        let d = durationWritten.contains(id)
+        return EpisodeUserInfo(isBookmarked: b, isRecasted: r, listenProgress: p, durationWritten: d)
+    }
+    
     func bookmark(id: String) {
         bookmarks.insert(id)
     }

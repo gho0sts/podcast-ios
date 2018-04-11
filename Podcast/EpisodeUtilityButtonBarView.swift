@@ -126,16 +126,24 @@ class EpisodeUtilityButtonBarView: UIView {
     }
     
     func setRecommendedButtonToState(isRecommended: Bool, numberOfRecommendations: Int) {
-        recommendedButton.setupWithNumber(isSelected: isRecommended, numberOf: numberOfRecommendations)
+        recommendedButton.configure(isSelected: isRecommended, numberOf: numberOfRecommendations)
+    }
+    
+    func set(_ isPlaying: Bool, _ enabled: Bool) {
+        playButton.configure(with: isPlaying, and: enabled)
+    }
+    
+    func update(with info: EpisodeUserInfo) {
+        
     }
 
-    func setup(with episode: Episode) {
-        slider.setSliderProgress(isPlaying: episode.isPlaying, progress: episode.currentProgress)
-        bookmarkButton.isSelected = episode.isBookmarked
-        recommendedButton.setupWithNumber(isSelected: episode.isRecommended, numberOf: episode.numberOfRecommendations)
+    func setup(with episode: Episode, and info: EpisodeUserInfo) {
+        slider.setValue(Float(info.listenProgress ?? 0), animated: true)
+//        slider.setSliderProgress(isPlaying: episode.isPlaying, progress: episode.currentProgress)
+        bookmarkButton.isSelected = info.isBookmarked
+        recommendedButton.configure(isSelected: info.isRecasted, numberOf: episode.numberOfRecommendations)
         topLineseparator.isHidden = !slider.isHidden
         downloaded.setupWith(episode: episode)
-        playButton.configure(for: episode)
         bookmarkButton.isHidden = episode.audioURL == nil
         recommendedButton.isHidden = episode.audioURL == nil
         greyedOutLabel.isHidden = episode.audioURL != nil
