@@ -214,11 +214,8 @@ extension UserDetailViewController: UITableViewDelegate, UITableViewDataSource {
             guard let cell = tableView.dequeueReusableCell(withIdentifier: episodeCellReuseId) as? EpisodeTableViewCell else { return EpisodeTableViewCell() }
             let episode = recasts[indexPath.row]
             cell.delegate = self
-            cell.setup(with: episode)
+            cell.setup(with: episode, and: EpisodeManager.consolidateInfo(for: episode))
             cell.layoutSubviews()
-            if episode.isPlaying {
-                currentlyPlayingIndexPath = indexPath
-            }
             return cell
         } else {
             guard let cell = tableView.dequeueReusableCell(withIdentifier: nullEpisodeCellReuseId) as? NullProfileTableViewCell else { return NullProfileTableViewCell(style: .default, reuseIdentifier: nullEpisodeCellReuseId) }

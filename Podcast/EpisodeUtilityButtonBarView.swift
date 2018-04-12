@@ -134,7 +134,7 @@ class EpisodeUtilityButtonBarView: UIView {
     }
     
     func update(with info: EpisodeUserInfo) {
-        
+        // TODO: for updates to just button bar info
     }
 
     func setup(with episode: Episode, and info: EpisodeUserInfo) {

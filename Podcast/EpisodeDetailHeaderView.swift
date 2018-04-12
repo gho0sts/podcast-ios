@@ -9,11 +9,9 @@
 import UIKit
 
 protocol EpisodeDetailHeaderViewDelegate: class {
-    func episodeDetailHeaderDidPressPlayButton(view: EpisodeDetailHeaderView)
-    func episodeDetailHeaderDidPressMoreButton(view: EpisodeDetailHeaderView)
-    func episodeDetailHeaderDidPressRecommendButton(view: EpisodeDetailHeaderView)
-    func episodeDetailHeaderDidPressBookmarkButton(view: EpisodeDetailHeaderView)
-    func episodeDetailHeaderDidPressSeriesTitleLabel(view: EpisodeDetailHeaderView)
+    func didPress(_ action: EpisodeAction, on episodeDetailHeader: EpisodeDetailHeaderView)
+    func didPressMoreActions(on episodeDetailHeader: EpisodeDetailHeaderView)
+    func didPressSeriesTitle(on episodeDetailHeader: EpisodeDetailHeaderView)
 }
 
 class EpisodeDetailHeaderView: UIView {
@@ -118,11 +116,11 @@ class EpisodeDetailHeaderView: UIView {
         episodeArtworkImageView.addCornerRadius(height: artworkDimension)
     }
 
-    func setupForEpisode(episode: Episode) {
+    func configure(for episode: Episode, and info: EpisodeUserInfo) {
         episodeArtworkImageView.setImageAsynchronouslyWithDefaultImage(url: episode.smallArtworkImageURL)
         seriesTitleLabel.setTitle(episode.seriesTitle, for: .normal)
         episodeTitleLabel.text = episode.title
-        episodeUtilityButtonBarView.setup(with: episode)
+        episodeUtilityButtonBarView.setup(with: episode, and: info)
         episodeUtilityButtonBarView.greyedOutLabel.isHidden = true // because the header view looks weird with it greyed out
         dateLabel.text = episode.getDateTimeLabelString(includeSeriesTitle: false)
     }
@@ -131,10 +129,10 @@ class EpisodeDetailHeaderView: UIView {
     // Delegate Methods 
     //
     func updateWithPlayButtonPress(episode: Episode) {
-        episodeUtilityButtonBarView.setup(with: episode)
+        episodeUtilityButtonBarView.playButton.configure(with: <#T##Bool#>, and: <#T##Bool#>).setup(with: episode)
     }
 
-    func setBookmarkButtonToState(isBookmarked: Bool) {
+    func set(isBookmarked: Bool) {
         episodeUtilityButtonBarView.bookmarkButton.isSelected = isBookmarked
     }
     
