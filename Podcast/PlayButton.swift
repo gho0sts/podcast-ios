@@ -25,11 +25,11 @@ class PlayButton: Button {
         setTitleColor(.sea, for: .selected)
         titleEdgeInsets = UIEdgeInsets(top: 0, left: buttonTitlePadding, bottom: 0, right: 0)
     }
-
-    func configure(for episode: Episode) {
-        if let _ = episode.audioURL {
+    
+    func set(isPlayable: Bool) {
+        if isPlayable {
             isEnabled = true
-            isSelected = episode.isPlaying
+            isSelected = false
             titleEdgeInsets = UIEdgeInsets(top: 0, left: buttonTitlePadding, bottom: 0, right: 0)
         } else {
             titleEdgeInsets = .zero

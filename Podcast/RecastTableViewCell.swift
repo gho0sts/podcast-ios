@@ -11,14 +11,14 @@ protocol RecastTableViewCellDelegate: class {
     func expand(for cell: RecastTableViewCell, _ isExpanded: Bool)
 }
 
-class RecastTableViewCell: UITableViewCell, RecastSubjectViewDelegate {
+class RecastTableViewCell: EpisodeDisplayCell, RecastSubjectViewDelegate {
 
     var subjectView: RecastSubjectView!
 
     let padding: CGFloat = 18
 
     weak var delegate: RecastTableViewCellDelegate?
-
+    
     override init(style: UITableViewCellStyle, reuseIdentifier: String?) {
         super.init(style: style, reuseIdentifier: reuseIdentifier)
         self.selectionStyle = .none
@@ -34,15 +34,16 @@ class RecastTableViewCell: UITableViewCell, RecastSubjectViewDelegate {
         }
 
         subjectView.delegate = self
+        displayView = subjectView
     }
 
     required init?(coder aDecoder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
     }
 
-    func setup(with episode: Episode, for user: User, isExpanded: Bool) {
-        subjectView.setup(with: episode, for: user, isExpanded: isExpanded)
-    }
+//    func setup(with episode: Episode, for user: User, isExpanded: Bool) {
+//        subjectView.setup(with: episode, for: user, isExpanded: isExpanded)
+//    }
 
     func updateWithPlayButtonPress(episode: Episode) {
         subjectView.episodeMiniView.updateWithPlayButtonPress(episode: episode)

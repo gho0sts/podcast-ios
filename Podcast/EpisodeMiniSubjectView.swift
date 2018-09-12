@@ -131,10 +131,10 @@ class EpisodeMiniSubjectView: UIView {
         layer.cornerRadius = 6
     }
 
-    convenience init(episode: Episode) {
-        self.init()
-        setup(with: episode)
-    }
+//    convenience init(episode: Episode) {
+//        self.init()
+//        setup(with: episode)
+//    }
 
     required init?(coder aDecoder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
@@ -145,16 +145,16 @@ class EpisodeMiniSubjectView: UIView {
         titleLabel.sizeToFit()
     }
 
-    func setup(with episode: Episode) {
-        artworkImageView.setImageAsynchronouslyWithDefaultImage(url: episode.smallArtworkImageURL)
-        titleLabel.text = episode.title
-        dateTimeLabel.text = episode.dateTimeLabelString
-        // this is to avoid newlines/paragraphs showing up after truncating text
-        let stringWithoutNewlines = episode.attributedDescription.string.replacingOccurrences(of: "\n", with: "")
-        let mutableString = NSMutableAttributedString(string: stringWithoutNewlines)
-        descriptionLabel.attributedText = mutableString.toEpisodeDescriptionStyle(lineBreakMode: .byTruncatingTail)
-        updateWithPlayButtonPress(episode: episode)
-    }
+//    func setup(with episode: Episode) {
+//        artworkImageView.setImageAsynchronouslyWithDefaultImage(url: episode.smallArtworkImageURL)
+//        titleLabel.text = episode.title
+//        dateTimeLabel.text = episode.dateTimeLabelString
+//        // this is to avoid newlines/paragraphs showing up after truncating text
+//        let stringWithoutNewlines = episode.attributedDescription.string.replacingOccurrences(of: "\n", with: "")
+//        let mutableString = NSMutableAttributedString(string: stringWithoutNewlines)
+//        descriptionLabel.attributedText = mutableString.toEpisodeDescriptionStyle(lineBreakMode: .byTruncatingTail)
+//        updateWithPlayButtonPress(episode: episode)
+//    }
 
     @objc func moreButtonPress() {
         delegate?.didPress(on: .more)
@@ -167,4 +167,40 @@ class EpisodeMiniSubjectView: UIView {
     func updateWithPlayButtonPress(episode: Episode) {
         playImage.image = episode.isPlaying ?  #imageLiteral(resourceName: "play_feed_icon_selected") : #imageLiteral(resourceName: "iPlay")
     }
+}
+
+extension EpisodeMiniSubjectView: EpisodeDisplayView {
+    func set(title: String) {
+        titleLabel.text = title
+    }
+    
+    func set(description: String) {
+        // this is to avoid newlines/paragraphs showing up after truncating text
+        let stringWithoutNewlines = description.replacingOccurrences(of: "\n", with: " ")
+        let mutableString = NSMutableAttributedString(string: stringWithoutNewlines)
+        descriptionLabel.attributedText = mutableString.toEpisodeDescriptionStyle(lineBreakMode: .byTruncatingTail)
+    }
+    
+    func set(dateCreated: String) {
+        dateTimeLabel.text = dateCreated
+    }
+    
+    func set(smallImageUrl: URL) {
+        artworkImageView.setImageAsynchronouslyWithDefaultImage(url: smallImageUrl)
+    }
+    
+    func set(isPlaying: Bool) {
+        playImage.image = isPlaying ?  #imageLiteral(resourceName: "play_feed_icon_selected") : #imageLiteral(resourceName: "iPlay")
+    }
+    
+    func set(isPlayable: Bool) {}
+    func set(seriesTitle: String) {}
+    func set(largeImageUrl: URL) {}
+    func set(topics: [String]) {}
+    func set(duration: String) {}
+    func set(isBookmarked: Bool) {}
+    func set(isRecasted: Bool) {}
+    func set(recastBlurb: String) {}
+    func set(numberOfRecasts: Int) {}
+    func set(downloadStatus: DownloadStatus) {}
 }

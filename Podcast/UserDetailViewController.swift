@@ -214,10 +214,34 @@ extension UserDetailViewController: UITableViewDataSource {
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         if recasts.count != 0 {
-            guard let cell = tableView.dequeueReusableCell(withIdentifier: episodeCellReuseId) as? RecastTableViewCell else { return RecastTableViewCell() }
+            let cell = tableView.dequeueReusableCell(withIdentifier: episodeCellReuseId) as! RecastTableViewCell
             let episode = recasts[indexPath.row]
             cell.delegate = self
-            cell.setup(with: episode, for: user, isExpanded: expandedRecasts.contains(episode))
+            
+            cell.displayView.set(title: episode.title)
+            cell.displayView.set(description: episode.descriptionText)
+            cell.displayView.set(dateCreated: episode.dateString())
+            cell.displayView.set(seriesTitle: episode.seriesTitle)
+            cell.displayView.set(title: episode.title)
+            if let url = episode.smallArtworkImageURL {
+                cell.displayView.set(smallImageUrl: url)
+            }
+            if let url = episode.largeArtworkImageURL {
+                cell.displayView.set(largeImageUrl: url)
+            }
+            
+            cell.displayView.set(topics: episode.topics.map { topic in topic.name })
+            cell.displayView.set(duration: episode.duration)
+            
+            cell.displayView.set(isBookmarked: episode.isBookmarked)
+            cell.displayView.set(isRecasted: episode.isRecommended)
+            if let blurb = UserEpisodeData.shared.getBlurbForCurrentUser(and: episode) {
+                cell.displayView.set(recastBlurb: blurb)
+            }
+            let downloadStatus = DownloadManager.shared.status(for: episode.id)
+            cell.displayView.set(downloadStatus: downloadStatus)
+            cell.displayView.set(numberOfRecasts: episode.numberOfRecommendations)
+            
             cell.layoutSubviews()
             if episode.isPlaying {
                 currentlyPlayingIndexPath = indexPath

@@ -80,26 +80,26 @@ class RecastSubjectView: UIView {
         fatalError("init(coder:) has not been implemented")
     }
 
-    func setup(with episode: Episode, for user: User, isExpanded: Bool = false) {
-        recastBlurb.numberOfLines = 3
-        episodeMiniView.setup(with: episode)
-        let recastText = UserEpisodeData.shared.getBlurb(for: user, and: episode) ?? ""
-        recastBlurb.text = recastText
-        expandedText = NSMutableAttributedString(string: recastText, attributes: [.font: UIFont._14RegularFont()])
-        expandedText.append(NSMutableAttributedString(string: " Read Less", attributes: [.font: UIFont._14RegularFont(), .foregroundColor: UIColor.sea]))
-        expand(isExpanded)
-        if recastText == "" {
-            episodeMiniView.snp.remakeConstraints { make in
-                make.leading.trailing.equalToSuperview().inset(padding)
-                make.top.equalTo(recastBlurb.snp.bottom)
-            }
-        } else {
-            episodeMiniView.snp.remakeConstraints { make in
-                make.leading.trailing.equalToSuperview().inset(padding)
-                make.top.equalTo(recastBlurb.snp.bottom).offset(padding)
-            }
-        }
-    }
+//    func setup(with episode: Episode, for user: User, isExpanded: Bool = false) {
+//        recastBlurb.numberOfLines = 3
+//        episodeMiniView.setup(with: episode)
+//        let recastText = UserEpisodeData.shared.getBlurb(for: user, and: episode) ?? ""
+//        recastBlurb.text = recastText
+//        expandedText = NSMutableAttributedString(string: recastText, attributes: [.font: UIFont._14RegularFont()])
+//        expandedText.append(NSMutableAttributedString(string: " Read Less", attributes: [.font: UIFont._14RegularFont(), .foregroundColor: UIColor.sea]))
+//        expand(isExpanded)
+//        if recastText == "" {
+//            episodeMiniView.snp.remakeConstraints { make in
+//                make.leading.trailing.equalToSuperview().inset(padding)
+//                make.top.equalTo(recastBlurb.snp.bottom)
+//            }
+//        } else {
+//            episodeMiniView.snp.remakeConstraints { make in
+//                make.leading.trailing.equalToSuperview().inset(padding)
+//                make.top.equalTo(recastBlurb.snp.bottom).offset(padding)
+//            }
+//        }
+//    }
 
     @objc func readPress() {
         expand(!currentlyExpanded)
@@ -117,6 +117,56 @@ class RecastSubjectView: UIView {
             }
         }
     }
+}
+
+extension RecastSubjectView: EpisodeDisplayView {
+    func set(title: String) {
+        episodeMiniView.set(title: title)
+    }
+    
+    func set(description: String) {
+        episodeMiniView.set(description: description)
+    }
+    
+    func set(dateCreated: String) {
+        episodeMiniView.set(dateCreated: dateCreated)
+    }
+    
+    func set(smallImageUrl: URL) {
+        episodeMiniView.set(smallImageUrl: smallImageUrl)
+    }
+    
+    func set(isPlaying: Bool) {
+        episodeMiniView.set(isPlaying: isPlaying)
+    }
+    
+    func set(recastBlurb: String) {
+        self.recastBlurb.numberOfLines = 3
+        self.recastBlurb.text = recastBlurb
+        expandedText = NSMutableAttributedString(string: recastBlurb, attributes: [.font: UIFont._14RegularFont()])
+        expandedText.append(NSMutableAttributedString(string: " Read Less", attributes: [.font: UIFont._14RegularFont(), .foregroundColor: UIColor.sea]))
+        if recastBlurb == "" {
+            episodeMiniView.snp.remakeConstraints { make in
+                make.leading.trailing.equalToSuperview().inset(padding)
+                make.top.equalTo(self.recastBlurb.snp.bottom)
+            }
+        } else {
+            episodeMiniView.snp.remakeConstraints { make in
+                make.leading.trailing.equalToSuperview().inset(padding)
+                make.top.equalTo(self.recastBlurb.snp.bottom).offset(padding)
+            }
+        }
+    }
+    
+    func set(seriesTitle: String) {}
+    func set(largeImageUrl: URL) {}
+    func set(topics: [String]) {}
+    func set(duration: String) {}
+    func set(isPlayable: Bool) {}
+    func set(isBookmarked: Bool) {}
+    func set(isRecasted: Bool) {}
+    func set(numberOfRecasts: Int) {}
+    func set(downloadStatus: DownloadStatus) {}
 }
 
 extension RecastSubjectView: EpisodeMiniSubjectViewDelegate {

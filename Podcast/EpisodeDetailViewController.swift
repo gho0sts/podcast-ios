@@ -45,6 +45,7 @@ class EpisodeDetailViewController: ViewController {
         }
         
         if let episode = episode {
+            // TODO
             headerView.setup(for: episode, downloadStatus: DownloadManager.shared.status(for: episode.id))
             let style = NSMutableParagraphStyle()
             style.lineSpacing = 4

@@ -165,22 +165,22 @@ class EpisodeSubjectView: UIView {
         episodeUtilityButtonBarView.prepareForReuse()
     }
     
-    func setup(with episode: Episode, downloadStatus: DownloadStatus) {
-        episodeNameLabel.text = episode.title
-        dateTimeLabel.text = episode.dateTimeLabelString
-        // this is to avoid newlines/paragraphs showing up after truncating text
-        let stringWithoutNewlines = episode.attributedDescription.string.replacingOccurrences(of: "\n", with: "")
-        let mutableString = NSMutableAttributedString(string: stringWithoutNewlines)
-        descriptionLabel.attributedText = mutableString.toEpisodeDescriptionStyle(lineBreakMode: .byTruncatingTail)
-        podcastImage.setImageAsynchronouslyWithDefaultImage(url: episode.smallArtworkImageURL)
-        episodeUtilityButtonBarView.setup(with: episode, downloadStatus)
-        greyedOutLabel.isHidden = episode.audioURL != nil
-        backgroundColor = episode.audioURL == nil ? UIColor.lightGrey.withAlphaComponent(0.5) : .offWhite
-    }
+//    func setup(with episode: Episode, downloadStatus: DownloadStatus) {
+//        episodeNameLabel.text = episode.title
+//        dateTimeLabel.text = episode.dateTimeLabelString
+//        // this is to avoid newlines/paragraphs showing up after truncating text
+//        let stringWithoutNewlines = episode.attributedDescription.string.replacingOccurrences(of: "\n", with: "")
+//        let mutableString = NSMutableAttributedString(string: stringWithoutNewlines)
+//        descriptionLabel.attributedText = mutableString.toEpisodeDescriptionStyle(lineBreakMode: .byTruncatingTail)
+//        podcastImage.setImageAsynchronouslyWithDefaultImage(url: episode.smallArtworkImageURL)
+//        episodeUtilityButtonBarView.setup(with: episode, downloadStatus)
+//        greyedOutLabel.isHidden = episode.audioURL != nil
+//        backgroundColor = episode.audioURL == nil ? UIColor.lightGrey.withAlphaComponent(0.5) : .offWhite
+//    }
 
-    func updateWithPlayButtonPress(episode: Episode) {
-        episodeUtilityButtonBarView.playButton.configure(for: episode)
-    }
+//    func updateWithPlayButtonPress(episode: Episode) {
+//        episodeUtilityButtonBarView.playButton.configure(for: episode)
+//    }
     
     ///
     ///Mark - Buttons
@@ -200,4 +200,63 @@ class EpisodeSubjectView: UIView {
     @objc func didPressMoreButton() {
         delegate?.didPress(on: .more, for: self)
     }
+}
+
+// MARK: EpisodeDisplayView
+extension EpisodeSubjectView: EpisodeDisplayView {
+    func set(title: String) {
+        episodeNameLabel.text = title
+    }
+    
+    func set(description: String) {
+        // this is to avoid newlines/paragraphs showing up after truncating text
+        let stringWithoutNewlines = description.replacingOccurrences(of: "\n", with: " ")
+        let mutableString = NSMutableAttributedString(string: stringWithoutNewlines)
+        descriptionLabel.attributedText = mutableString.toEpisodeDescriptionStyle(lineBreakMode: .byTruncatingTail)
+    }
+    
+    func set(dateCreated: String) {
+        dateTimeLabel.text = dateCreated
+    }
+    
+    func set(smallImageUrl: URL) {
+        podcastImage.setImageAsynchronouslyWithDefaultImage(url: smallImageUrl)
+    }
+    
+    func set(isPlayable: Bool) {
+        episodeUtilityButtonBarView.bookmarkButton.isHidden = !isPlayable
+        episodeUtilityButtonBarView.recommendedButton.isHidden = !isPlayable
+        episodeUtilityButtonBarView.moreButton.isHidden = !isPlayable
+        episodeUtilityButtonBarView.playButton.set(isPlayable: isPlayable)
+        greyedOutLabel.isHidden = isPlayable
+        backgroundColor = !isPlayable ? UIColor.lightGrey.withAlphaComponent(0.5) : .offWhite
+    }
+    
+    func set(isPlaying: Bool) {
+        episodeUtilityButtonBarView.playButton.isSelected = isPlaying
+    }
+    
+    func set(isBookmarked: Bool) {
+        episodeUtilityButtonBarView.bookmarkButton.isSelected = isBookmarked
+        
+    }
+    
+    func set(isRecasted: Bool) {
+        episodeUtilityButtonBarView.recommendedButton.isSelected = isRecasted
+    }
+    
+    func set(numberOfRecasts: Int) {
+        let titleString = numberOfRecasts > 0 ? numberOfRecasts.shortString() : ""
+        episodeUtilityButtonBarView.recommendedButton.setTitle(titleString, for: .normal)
+    }
+    
+    func set(downloadStatus: DownloadStatus) {
+        episodeUtilityButtonBarView.downloaded.setup(downloadStatus)
+    }
+    
+    func set(duration: String) {}
+    func set(recastBlurb: String) {}
+    func set(seriesTitle: String) {}
+    func set(largeImageUrl: URL) {}
+    func set(topics: [String]) {}
 }

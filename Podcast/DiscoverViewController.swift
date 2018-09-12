@@ -307,10 +307,35 @@ extension DiscoverViewController: UITableViewDataSource {
     }
 
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
-        guard let cell = tableView.dequeueReusableCell(withIdentifier: episodesReuseIdentifier) as? EpisodeTableViewCell else { return EpisodeTableViewCell() }
+        let cell = tableView.dequeueReusableCell(withIdentifier: episodesReuseIdentifier) as! EpisodeTableViewCell
         cell.delegate = self
         let episode = topEpisodes[indexPath.row]
-        cell.setup(with: episode, downloadStatus: DownloadManager.shared.status(for: episode.id))
+//        cell.setup(with: episode, downloadStatus: DownloadManager.shared.status(for: episode.id))
+        
+        cell.displayView.set(title: episode.title)
+        cell.displayView.set(description: episode.descriptionText)
+        cell.displayView.set(dateCreated: episode.dateString())
+        cell.displayView.set(seriesTitle: episode.seriesTitle)
+        cell.displayView.set(title: episode.title)
+        if let url = episode.smallArtworkImageURL {
+            cell.displayView.set(smallImageUrl: url)
+        }
+        if let url = episode.largeArtworkImageURL {
+            cell.displayView.set(largeImageUrl: url)
+        }
+        
+        cell.displayView.set(topics: episode.topics.map { topic in topic.name })
+        cell.displayView.set(duration: episode.duration)
+        
+        cell.displayView.set(isBookmarked: episode.isBookmarked)
+        cell.displayView.set(isRecasted: episode.isRecommended)
+        if let blurb = UserEpisodeData.shared.getBlurbForCurrentUser(and: episode) {
+            cell.displayView.set(recastBlurb: blurb)
+        }
+        let downloadStatus = DownloadManager.shared.status(for: episode.id)
+        cell.displayView.set(downloadStatus: downloadStatus)
+        cell.displayView.set(numberOfRecasts: episode.numberOfRecommendations)
+        
         cell.layoutSubviews()
         if topEpisodes[indexPath.row].isPlaying {
             currentlyPlayingIndexPath = indexPath

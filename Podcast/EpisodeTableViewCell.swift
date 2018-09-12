@@ -13,7 +13,7 @@ protocol EpisodeTableViewCellDelegate: class {
     func didPress(on action: EpisodeAction, for cell: EpisodeTableViewCell)
 }
 
-class EpisodeTableViewCell: UITableViewCell, EpisodeSubjectViewDelegate {
+class EpisodeTableViewCell: EpisodeDisplayCell, EpisodeSubjectViewDelegate {
 
     var episodeSubjectView: EpisodeSubjectView!
     
@@ -30,7 +30,9 @@ class EpisodeTableViewCell: UITableViewCell, EpisodeSubjectViewDelegate {
             make.edges.equalToSuperview()
         }
         
-        episodeSubjectView.delegate = self 
+        episodeSubjectView.delegate = self
+        
+        displayView = episodeSubjectView
     }
     
     required init?(coder aDecoder: NSCoder) {
@@ -41,9 +43,9 @@ class EpisodeTableViewCell: UITableViewCell, EpisodeSubjectViewDelegate {
         episodeSubjectView.setup(with: episode, downloadStatus: downloadStatus)
     }
 
-    func updateWithPlayButtonPress(episode: Episode) {
-        episodeSubjectView.updateWithPlayButtonPress(episode: episode)
-    }
+//    func updateWithPlayButtonPress(episode: Episode) {
+//        episodeSubjectView.updateWithPlayButtonPress(episode: episode)
+//    }
     
     ///
     /// Mark: Delegate

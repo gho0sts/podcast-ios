@@ -158,17 +158,17 @@ class BookmarkTableViewCell: EpisodeDisplayCell {
         separator.frame = CGRect(x: 0, y: frame.height - separatorHeight, width: frame.width, height: separatorHeight)
     }
     
-    func setup(with episode: Episode, downloadStatus: DownloadStatus) {
-        episodeID = episode.id
-        episodeNameLabel.text = episode.title
-        dateTimeLabel.text = episode.dateTimeLabelString
-        recommendedButton.setupWithNumber(isSelected: episode.isRecommended, numberOf: episode.numberOfRecommendations)
-        episodeImage.setImageAsynchronouslyWithDefaultImage(url: episode.smallArtworkImageURL)
-        slider.setSliderProgress(isPlaying: episode.isPlaying, progress: episode.currentProgress)
-        playButton.configure(for: episode)
-        recommendedButton.isHidden = episode.audioURL == nil
-        greyedOutLabel.isHidden = episode.audioURL != nil
-    }
+//    func setup(with episode: Episode, downloadStatus: DownloadStatus) {
+//        episodeID = episode.id
+//        episodeNameLabel.text = episode.title
+//        dateTimeLabel.text = episode.dateTimeLabelString
+//        recommendedButton.setupWithNumber(isSelected: episode.isRecommended, numberOf: episode.numberOfRecommendations)
+//        episodeImage.setImageAsynchronouslyWithDefaultImage(url: episode.smallArtworkImageURL)
+//        slider.setSliderProgress(isPlaying: episode.isPlaying, progress: episode.currentProgress)
+//        playButton.configure(for: episode)
+//        recommendedButton.isHidden = episode.audioURL == nil
+//        greyedOutLabel.isHidden = episode.audioURL != nil
+//    }
 
     func updateWithPlayButtonPress(episode: Episode){
         playButton.isSelected = episode.isPlaying
